@@ -1,0 +1,29 @@
+#cloud-config
+package_update: true
+packages:
+ - ruby-full
+ - ruby-bundler
+ - build-essential
+ - git
+runcmd:
+ - mkdir /run/puma
+ - cd /run/puma
+ - [ sh, -xc, "wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -"]
+ - [ sh, -xc, "echo 'deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse' | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list" ]
+ - [ sh, -xc, "apt-get update" ]
+ - [ sh, -xc, "apt-get install -y mongodb-org" ]
+ - [ sh, -xc, "systemctl start mongod" ]
+ - [ sh, -xc, "systemctl enable mongod" ]
+ - [ sh, -xc, "systemctl status mongod" ]
+ - [ sh, -xc, "git clone -b monolith https://github.com/express42/reddit.git" ]
+ - cd /run/puma/reddit
+ - [ sh, -xc, "bundle install" ]
+ - [ sh, -xc, "puma -d" ]
+ - [ sh, -xc, "ps aux | grep puma" ]
+users:
+  - name: slz
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtivo1DV1Jp/6iAQKryXSUaWr3KN828Mxx186P24roY9Bh5cDqSKetyoZ10zHB0/Mu3V0u9dHikhKHFqR3NoupWM90ife93dTjc0jMrJQagBeNhv1YwNwaH7Kx3etPHeEQD34+CbvD+nIuquCpd/hMqA0VRmcAmbV38CWru1a9mpyiWk3Z9iYEr8sldJ19eWhngYVzMq22ngf23ysIJBp5ybWez78baOLnvqxsP5P7w0ORmtfjCn6r0zKCWYiZ86iJWI6cF1qHciOwzU5GCWy+IelbogTzeffUg6KFHcaSUYgTQYmIVyVCwi8VSADWJaZsOj9XqRy6/p6I+8dpmzXkUkgtTu20jlQ853S/NW57JKHRf7VZIKn85qB3w2Q1w6smNWIKOdDtQvRnwLQhVTtlgmk8i9qT4TJa07p1goYzzrVI0OUvls2zIcFB4xCr7WFFgIXBrw4AgUMaGeOk9zAkA+7yD0wezXOtTqbBCZb9XpjkTV65GhsdKJMm1uqZwEs= slz@Antons-MacBook-Pro.local
