@@ -1,5 +1,5 @@
 {
-            "path_to_yc_key": "/home/ubuntu/mykey.json",
+            "path_to_yc_key": "mykey.json",
             "fid": "some folder id form yc",
             "s_image": "ubuntu-1604-lts",
             "img_name": "reddit-base-{{timestamp}}",
